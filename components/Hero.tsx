@@ -1,7 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useContent } from '../hooks/useContent';
+import { urlFor } from '../lib/sanity';
 
 export const Hero: React.FC = () => {
+  const { data: hero, loading } = useContent('*[_type == "hero"][0]');
+
+  if (loading) {
+    return (
+      <section className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-2 border-matcha/30 border-t-matcha rounded-full animate-spin"></div>
+      </section>
+    );
+  }
+
+  // Fallback content if CMS is empty or loading
+  const content = hero || {
+    title: 'Medicina',
+    italicTitle: 'con Pulso.',
+    subtitle: 'Ciencia rigurosa. Impacto humano.',
+    fullName: 'Dr. Juliana Linares Puerta',
+    profileImage: '/images/Foto_perfil.PNG'
+  };
+
   return (
     <section className="min-h-screen flex flex-col items-center justify-center relative px-6 py-20 overflow-hidden">
 
@@ -31,8 +52,8 @@ export const Hero: React.FC = () => {
                 visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1 } }
               }}
             >
-              Medicina <br />
-              <span className="italic text-matcha">con Pulso.</span>
+              {content.title} <br />
+              <span className="italic text-matcha">{content.italicTitle}</span>
             </motion.h1>
 
             <motion.div
@@ -50,7 +71,7 @@ export const Hero: React.FC = () => {
                 visible: { opacity: 1, transition: { duration: 1 } }
               }}
             >
-              Ciencia rigurosa. Impacto humano.
+              {content.subtitle}
             </motion.h2>
 
             <motion.p
@@ -60,7 +81,7 @@ export const Hero: React.FC = () => {
                 visible: { opacity: 1, transition: { duration: 1, delay: 1 } }
               }}
             >
-              Dr. Juliana Linares Puerta
+              {content.fullName}
             </motion.p>
           </motion.div>
         </div>
@@ -82,8 +103,8 @@ export const Hero: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-jungle/80 to-transparent z-10 mix-blend-multiply pointer-events-none"></div>
 
               <img
-                src="/images/Foto_perfil.PNG"
-                alt="Juliana Linares Puerta"
+                src={content.profileImage?.asset ? urlFor(content.profileImage).url() : content.profileImage}
+                alt={content.fullName}
                 className="w-full h-full object-cover object-top transform transition-transform duration-[2s] ease-out group-hover:scale-110"
               />
             </div>
